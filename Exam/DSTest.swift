@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import Observation
 
 /* MARK: Your task:
@@ -115,7 +116,7 @@ func searchByID(users: [User1], id: Int) -> User1? {
  }
  */
 
-struct APIResponse: Decodable {
+struct APIResponse1: Decodable {
     let collection: CollectionModel
     let data: [Make]
 }
@@ -131,14 +132,14 @@ struct CollectionModel: Decodable {
     let last: String
 }
 
-struct Make: Decodable, Identifiable {
+struct Make: Decodable, Identifiable, Hashable {
     let id: Int
     let name: String
 }
 
 protocol CarServiceProtocol {
     
-    func fetch() async throws -> APIResponse
+    func fetch() async throws -> APIResponse1
     
 }
 
@@ -147,7 +148,7 @@ struct APIService: CarServiceProtocol {
     
     let url = "https://carapi.app/api/makes/v2"
     
-    func fetch() async throws -> APIResponse {
+    func fetch() async throws -> APIResponse1 {
         
         guard let url = URL(string: url) else {
             throw URLError(.badURL)
@@ -163,7 +164,7 @@ struct APIService: CarServiceProtocol {
             throw URLError(.badServerResponse)
         }
         
-        return try JSONDecoder().decode(APIResponse.self, from: data)
+        return try JSONDecoder().decode(APIResponse1.self, from: data)
     }
 }
 
@@ -181,7 +182,7 @@ class CarViewModel {
     private(set) var viewState: ViewState
     private(set) var makes: [Make]
     private(set) var filteredMakes: [Make]
-    var searchText: String
+    @Binding var searchText: String
     
     private let service: CarServiceProtocol
     
@@ -193,9 +194,14 @@ class CarViewModel {
         self.service = service
     }
     
-    func fetchMakes() async throws {
-        makes = try await service.fetch().data
-        viewState = .loaded
+    func fetchMakes() async {
+        do {
+            makes = try await service.fetch().data
+        } catch { viewState = .error(error.localizedDescription) }
+        if makes.isEmpty { viewState = .empty }
+        else {
+            viewState = .loaded
+        }
     }
     
     func search() {
@@ -203,11 +209,57 @@ class CarViewModel {
             make.name.contains(searchText)
         }
     }
-    
 }
 
+struct ProgressView: View {
+    
+    var body: some View {
+        Text("Loading...")
+    }
+}
 
+struct EmptyView: View {
+     
+    var body: some View {
+        Text("No manufacturers found !")
+    }
+}
 
+struct CarListView: View {
+    
+    var viewModel: CarViewModel = CarViewModel(service: APIService())
+    @State var selectedMake: Make?
+    
+    var body: some View {
+        
+        NavigationStack {
+            
+            switch viewModel.viewState {
+            case .loading: ProgressView()
+            case .empty: EmptyView()
+            case .error(let error): Text(error)
+            case .loaded:
+                List(viewModel.makes) { make in
+                    Text(make.name).onTapGesture { self.selectedMake = make }
+                }.task { await viewModel.fetchMakes() }
+                    .searchable(text: viewModel.$searchText)
+                    .refreshable { await viewModel.fetchMakes() }
+                    .navigationDestination(item: $selectedMake) { make in
+                        CarDetailView(make: make)}
+                
+            }
+        }
+    }
+}
+
+struct CarDetailView: View {
+    
+    let make: Make
+    
+    var body: some View {
+        Text(" \(make.name) make has been selected")
+    }
+}
 
 
 

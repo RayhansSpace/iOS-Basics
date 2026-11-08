@@ -26,10 +26,10 @@ struct ApiService {
 }
 
 
-//struct APIResponse: Decodable {
-//    let collection: CollectionModel
-//    let data: [DataModel]
-//}
+struct APIResponse: Decodable {
+    let collection: CollectionModel
+    let data: [DataModel]
+}
 
 //struct CollectionModel: Decodable {
 //    let url: String
@@ -41,8 +41,8 @@ struct ApiService {
 //    let first: String
 //    let last: String
 //}
-//
-//struct DataModel: Decodable, Identifiable {
-//    let id: Int
-//    let name: String
-//}
+
+struct DataModel: Decodable, Identifiable {
+    let id: Int
+    let name: String
+}
