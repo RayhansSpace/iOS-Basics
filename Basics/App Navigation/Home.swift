@@ -32,7 +32,9 @@ struct HomeView: View {
                 
                 TextField("Enter Text...", text: $text)
             }
-            .frame(width: UIScreen.main.bounds.width * 0.75)
+            .containerRelativeFrame(.horizontal) { width, _ in
+                width * 0.75
+            }
             .navigationDestination(for: Routes.self) { route in
                 AppRouteBuilder.build(route)
             }

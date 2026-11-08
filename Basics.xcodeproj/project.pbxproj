@@ -11,9 +11,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D8598BE630879E33006C5518 /* Basics */ = {
+		E870B955309CD6CD00D45FE9 /* Basics */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Basics;
+			sourceTree = "<group>";
+		};
+		E870B9CB309E363E00D45FE9 /* Exam */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Exam;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,8 +37,9 @@
 		D8598BDB30879E33006C5518 = {
 			isa = PBXGroup;
 			children = (
-				D8598BE630879E33006C5518 /* Basics */,
 				D8598BE530879E33006C5518 /* Products */,
+				E870B955309CD6CD00D45FE9 /* Basics */,
+				E870B9CB309E363E00D45FE9 /* Exam */,
 			);
 			sourceTree = "<group>";
 		};
@@ -61,7 +67,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				D8598BE630879E33006C5518 /* Basics */,
+				E870B955309CD6CD00D45FE9 /* Basics */,
+				E870B9CB309E363E00D45FE9 /* Exam */,
 			);
 			name = Basics;
 			packageProductDependencies = (
